@@ -373,6 +373,12 @@ main {
   padding: 0.18rem 0.7rem;
 }
 
+.specialty {
+  font-family: var(--serif);
+  font-style: italic;
+  color: var(--brass-deep);
+}
+
 .errors {
   margin-top: 0.7rem;
   color: var(--warn);

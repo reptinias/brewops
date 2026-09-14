@@ -65,6 +65,7 @@ function renderMachineCards(healths) {
       : "";
     card.innerHTML = `
       <h3>${m.name}</h3>
+      <p class="specialty">Specialty: <strong>${m.specialty || "no brews yet"}</strong></p>
       <p class="badge">${m.has_telemetry ? "telemetry" : "manual log"}</p>
       <p>${m.brew_count} brews · last ${m.last_brew ? m.last_brew.slice(0, 16) : "never"}</p>
       <p>Last maintenance: ${maintenance}</p>
