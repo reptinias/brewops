@@ -123,20 +123,20 @@ main {
 /* hero row: wide trend chart + a narrower breakdown beside it */
 #dashboard > .panel:has(#timeline) {
   grid-column: 1;
-  grid-row: 2;
+  grid-row: 3;
   display: flex;
   flex-direction: column;
 }
 
 #dashboard > .panel:has(#drink-bars) {
   grid-column: 2;
-  grid-row: 2;
+  grid-row: 3;
 }
 
 /* fleet gallery spans full width below the hero row */
 #dashboard > .panel:has(#machine-cards) {
   grid-column: 1 / -1;
-  grid-row: 3;
+  grid-row: 4;
 }
 
 /* the two logging forms sit side by side under the dashboard */
@@ -155,6 +155,75 @@ main {
   border-radius: var(--radius);
   padding: 1.4rem 1.5rem;
   box-shadow: var(--shadow);
+}
+
+.filter-bar {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.filter-bar label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+}
+
+.filter-bar input {
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  color: var(--ink);
+  background: #fff;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.filter-bar input:focus {
+  outline: none;
+  border-color: var(--brass);
+  box-shadow: 0 0 0 3px rgb(185 129 47 / 0.22);
+}
+
+.filter-bar button {
+  padding: 0.65rem 1.6rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--brass), var(--brass-deep));
+  color: #fff8ee;
+  font: inherit;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgb(138 90 28 / 0.3);
+  transition: transform 0.1s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.filter-bar button:hover {
+  filter: brightness(1.07);
+  box-shadow: var(--shadow-lift);
+}
+
+.filter-bar button:active {
+  transform: translateY(1px);
+}
+
+.filter-bar button:focus-visible {
+  outline: 3px solid rgb(185 129 47 / 0.5);
+  outline-offset: 2px;
+}
+
+.filter-bar .message {
+  width: 100%;
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  min-height: 1.2em;
 }
 
 /* section eyebrow: small-caps label with a brass tick */

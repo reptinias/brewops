@@ -9,6 +9,16 @@ async function fetchJSON(url, options) {
   return response.json();
 }
 
+let currentRange = { from: "", to: "" };
+
+function rangeQuery() {
+  const params = new URLSearchParams();
+  if (currentRange.from) params.set("from", currentRange.from);
+  if (currentRange.to) params.set("to", currentRange.to);
+  const qs = params.toString();
+  return qs ? `?${qs}` : "";
+}
+
 // ---- dashboard ----
 
 function renderDrinkBars(perDrink) {
@@ -75,7 +85,8 @@ function renderMachineCards(healths) {
 }
 
 async function loadDashboard() {
-  const stats = await fetchJSON("/api/stats");
+  const qs = rangeQuery();
+  const stats = await fetchJSON(`/api/stats${qs}`);
   document.getElementById("total-brews").textContent = stats.total_brews;
   const lastDay = stats.per_day[stats.per_day.length - 1];
   document.getElementById("brews-today").textContent = lastDay ? lastDay.count : 0;
@@ -84,7 +95,7 @@ async function loadDashboard() {
 
   const machines = await fetchJSON("/api/machines");
   document.getElementById("machine-count").textContent = machines.length;
-  const healths = await Promise.all(machines.map((m) => fetchJSON(`/api/machines/${m.id}`)));
+  const healths = await Promise.all(machines.map((m) => fetchJSON(`/api/machines/${m.id}${qs}`)));
   renderMachineCards(healths);
 }
 
@@ -153,8 +164,43 @@ async function submitForm(event, url, messageId, buildPayload) {
   }
 }
 
+function setupFilterBar() {
+  const applyBtn = document.getElementById("filter-apply");
+  const clearBtn = document.getElementById("filter-clear");
+  const message = document.getElementById("filter-message");
+
+  applyBtn.addEventListener("click", async () => {
+    const from = document.getElementById("filter-from").value;
+    const to = document.getElementById("filter-to").value;
+    message.textContent = "";
+    message.className = "message";
+    if (from && to && from > to) {
+      message.textContent = "'From' must be before 'To'.";
+      message.classList.add("error");
+      return;
+    }
+    currentRange = { from, to };
+    try {
+      await loadDashboard();
+    } catch (error) {
+      message.textContent = error.message;
+      message.classList.add("error");
+    }
+  });
+
+  clearBtn.addEventListener("click", async () => {
+    currentRange = { from: "", to: "" };
+    document.getElementById("filter-from").value = "";
+    document.getElementById("filter-to").value = "";
+    message.textContent = "";
+    message.className = "message";
+    await loadDashboard();
+  });
+}
+
 loadDashboard().catch((error) => {
   document.getElementById("total-brews").textContent = "!";
   console.error("Dashboard failed to load:", error);
 });
 setupForms().catch((error) => console.error("Form setup failed:", error));
+setupFilterBar();

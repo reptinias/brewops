@@ -118,3 +118,39 @@ def test_post_maintenance(db):
         "timestamp": "2026-06-06 09:00:00",
     })
     assert r.status == 400
+
+
+def test_stats_with_date_range(db):
+    r = request(app, "GET", "/api/stats?from=2026-06-02T00:00&to=2026-06-03T00:00")
+    assert r.status == 200
+    stats = r.json()
+    assert stats["total_brews"] == 1
+    per_drink = {d["name"]: d["count"] for d in stats["per_drink"]}
+    assert per_drink["latte"] == 1
+    assert per_drink["espresso"] == 0
+
+
+def test_stats_with_date_range_no_matches(db):
+    r = request(app, "GET", "/api/stats?from=2026-06-10T00:00&to=2026-06-11T00:00")
+    assert r.status == 200
+    stats = r.json()
+    assert stats["total_brews"] == 0
+    assert len(stats["per_drink"]) == 6
+
+
+def test_stats_rejects_inverted_range(db):
+    r = request(app, "GET", "/api/stats?from=2026-06-05T00:00&to=2026-06-01T00:00")
+    assert r.status == 400
+
+
+def test_machine_health_with_date_range(db):
+    r = request(app, "GET", "/api/machines/1?from=2026-06-01T08:00&to=2026-06-01T10:00")
+    assert r.status == 200
+    health = r.json()
+    assert health["brew_count"] == 2
+    assert health["last_brew"] == "2026-06-01 09:00:00"
+
+
+def test_machine_health_rejects_inverted_range(db):
+    r = request(app, "GET", "/api/machines/1?from=2026-06-05T00:00&to=2026-06-01T00:00")
+    assert r.status == 400
